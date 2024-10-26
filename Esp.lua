@@ -861,14 +861,7 @@ local CreatingFunctions = {
 		print(unpack(TopText[2]))
 		local TopTextObject = TopText.__OBJECT
 
-		SetRenderProperty(TopTextObject, "ZIndex", 4)
-		SetRenderProperty(TopTextObject, "Center", true)
-
 		local BottomText = Drawingnew("Text")
-		local BottomTextObject = BottomText.__OBJECT
-
-		SetRenderProperty(BottomTextObject, "ZIndex", 4)
-		SetRenderProperty(BottomTextObject, "Center", true)
 
 		Entry.Visuals.ESP[1] = TopText
 		Entry.Visuals.ESP[2] = BottomText
@@ -885,12 +878,6 @@ local CreatingFunctions = {
 				return Disconnect(Entry.Connections.ESP)
 			end
 
-			if Ready then
-				UpdatingFunctions.ESP(Entry, TopTextObject, BottomTextObject)
-			else
-				SetRenderProperty(TopTextObject, "Visible", false)
-				SetRenderProperty(BottomTextObject, "Visible", false)
-			end
 		end)
 	end,
 
