@@ -1,1 +1,1 @@
-{Astral = "1.1", LifeSentance = 468}
+return {Astral = "1.1", LifeSentance = 468}
