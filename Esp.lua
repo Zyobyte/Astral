@@ -128,51 +128,28 @@ else
 
 	local TemporaryDrawing = Drawingnew("Line")
 	local Executor = identifyexecutor()
-	local SupportsObject, RenderObjectMetatable = (stringfind(Executor, "Wave") or stringfind(Executor, "Synapse Z")) or TemporaryDrawing.__OBJECT
+	local SupportsObject, RenderObjectMetatable = (stringfind(Executor, "Wave")) or TemporaryDrawing.__OBJECT
 
 	TemporaryDrawing.Remove(TemporaryDrawing)
 
-	Drawingnew = SupportsObject and _Drawingnew or function(ObjectType, ...)
-		-- Handle Quad object creation separately
-		if ObjectType == "Quad" then
-			return DrawQuad(...)
-		else
-			-- Check if the object is valid
-			local object = _Drawingnew(ObjectType)
-			
-			-- Return a custom object with metatables
-			return setmetatable({
-				__OBJECT_EXISTS = true,
-				__OBJECT = object, -- Ensure this is a valid Drawing object
-				
-				-- Safely remove the object
-				Remove = function(self)
-					if self.__OBJECT_EXISTS then
-						self.__OBJECT:Remove() -- Safely remove the object if it exists
-					end
-					self.__OBJECT_EXISTS = false
-				end
-			}, {
-				-- Handle indexing (getter)
-				__index = function(self, Index)
-					if self.__OBJECT and self.__OBJECT_EXISTS then
-						return self.__OBJECT[Index]
-					end
-					return rawget(self, Index) -- fallback if not found in __OBJECT
-				end,
-				
-				-- Handle newindex (setter)
-				__newindex = function(self, Index, Value)
-					if self.__OBJECT and self.__OBJECT_EXISTS then
-						self.__OBJECT[Index] = Value
-					else
-						rawset(self, Index, Value) -- fallback if __OBJECT does not exist
-					end
-				end
-			})
-		end
+	Drawingnew = SupportsObject and _Drawingnew or function(...)
+		return ({...})[1] == "Quad" and DrawQuad(...) or setmetatable({
+			__OBJECT_EXISTS = true,
+			__OBJECT = _Drawingnew(...),
+
+			Remove = function(self)
+				self.__OBJECT.Remove(self)
+			end
+		}, {
+			__index = function(self, Index)
+				return self[Index]
+			end,
+
+			__newindex = function(self, Index, Value)
+				self[Index] = Value
+			end
+		})
 	end
-	
 
 	TemporaryDrawing = Drawingnew("Line")
 	RenderObjectMetatable = getmetatable(TemporaryDrawing)
@@ -858,8 +835,16 @@ local CreatingFunctions = {
 		local Settings = Environment.Properties.ESP
 
 		local TopText = Drawingnew("Text")
+		local TopTextObject = TopText.__OBJECT
+
+		SetRenderProperty(TopTextObject, "ZIndex", 4)
+		SetRenderProperty(TopTextObject, "Center", true)
 
 		local BottomText = Drawingnew("Text")
+		local BottomTextObject = BottomText.__OBJECT
+
+		SetRenderProperty(BottomTextObject, "ZIndex", 4)
+		SetRenderProperty(BottomTextObject, "Center", true)
 
 		Entry.Visuals.ESP[1] = TopText
 		Entry.Visuals.ESP[2] = BottomText
@@ -876,6 +861,12 @@ local CreatingFunctions = {
 				return Disconnect(Entry.Connections.ESP)
 			end
 
+			if Ready then
+				UpdatingFunctions.ESP(Entry, TopTextObject, BottomTextObject)
+			else
+				SetRenderProperty(TopTextObject, "Visible", false)
+				SetRenderProperty(BottomTextObject, "Visible", false)
+			end
 		end)
 	end,
 
