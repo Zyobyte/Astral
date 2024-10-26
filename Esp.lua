@@ -858,7 +858,7 @@ local CreatingFunctions = {
 		local Settings = Environment.Properties.ESP
 
 		local TopText = Drawingnew("Text")
-		print(unpack(TopText))
+		print(unpack(TopText[2]))
 		local TopTextObject = TopText.__OBJECT
 
 		SetRenderProperty(TopTextObject, "ZIndex", 4)
