@@ -128,7 +128,7 @@ else
 
 	local TemporaryDrawing = Drawingnew("Line")
 	local Executor = identifyexecutor()
-	local SupportsObject, RenderObjectMetatable = (stringfind(Executor, "Wave")) or TemporaryDrawing.__OBJECT
+	local SupportsObject, RenderObjectMetatable = (stringfind(Executor, "Wave") or stringfind(Executor, "Synapse Z")) or TemporaryDrawing.__OBJECT
 
 	TemporaryDrawing.Remove(TemporaryDrawing)
 
